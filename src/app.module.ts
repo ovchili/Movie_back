@@ -5,6 +5,8 @@ import { MovieModule } from './movie/movie.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { getMongoDbConfig } from './config/mongo.config';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { getMongoDbConfig } from './config/mongo.config';
       inject: [ConfigService],
       useFactory: getMongoDbConfig,
     }),
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

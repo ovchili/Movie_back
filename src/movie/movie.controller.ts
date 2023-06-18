@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -10,6 +12,10 @@ import {
 import { MovieService } from './movie.service';
 import { MovieDTO } from './dto/movie.dto';
 import { idValidationPipe } from 'src/pipes/id.validation.pipe';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { User } from 'src/auth/decorators/user.decorator';
+import { Types } from 'mongoose';
+import { User as UserModel } from 'src/user/user.model';
 
 @Controller('movies')
 export class MovieController {
@@ -25,21 +31,32 @@ export class MovieController {
     return this.movieService.getAll();
   }
 
+  @Auth()
+  @HttpCode(HttpStatus.OK)
   @Post()
-  async createMovie(@Body() movie: MovieDTO) {
-    return this.movieService.create(movie);
+  async createMovie(@User('_id') id: Types.ObjectId, @Body() movie: MovieDTO) {
+    return this.movieService.create(id, movie);
   }
 
+  @Auth()
+  @HttpCode(HttpStatus.OK)
   @Put(':id')
   async updateMovie(
-    @Param('id', idValidationPipe) id: string,
+    @User() user: UserModel,
+    @Param('id', idValidationPipe)
+    id: string,
     @Body() updateMovieDTO: MovieDTO,
   ) {
-    return this.movieService.update(id, updateMovieDTO);
+    return this.movieService.update(id, user, updateMovieDTO);
   }
 
+  @Auth()
+  @HttpCode(HttpStatus.OK)
   @Delete('/:id')
-  async deleteMovie(@Param('id', idValidationPipe) id: string) {
-    return this.movieService.delete(id);
+  async deleteMovie(
+    @User() user: UserModel,
+    @Param('id', idValidationPipe) id: string,
+  ) {
+    return this.movieService.delete(user, id);
   }
 }
