@@ -13,6 +13,9 @@ export class Movie extends Document {
   @Prop({ default: 0 })
   rating: number;
 
+  @Prop()
+  poster: string;
+
   @Prop({ type: MongoSchema.Types.ObjectId, ref: 'User' })
   user: User;
 }

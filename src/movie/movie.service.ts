@@ -7,7 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Movie } from './movie.model';
 import { Model, Types } from 'mongoose';
-import { MovieDTO } from './dto/movie.dto';
+import { CreateMovieDTO, UpdateMovieDTO } from './dto/movie.dto';
 import { User } from 'src/user/user.model';
 
 @Injectable()
@@ -34,7 +34,10 @@ export class MovieService {
       .exec();
   }
 
-  async create(userId: Types.ObjectId, movieDTO: MovieDTO): Promise<Movie> {
+  async create(
+    userId: Types.ObjectId,
+    movieDTO: CreateMovieDTO,
+  ): Promise<Movie> {
     const movie = await this.movie.findOne({ name: movieDTO.name });
 
     if (movie) {
@@ -43,6 +46,7 @@ export class MovieService {
     const newMovie = new this.movie({
       name: movieDTO.name,
       description: movieDTO.description,
+      poster: movieDTO.poster,
       user: userId,
     });
     return newMovie.save();
@@ -51,7 +55,7 @@ export class MovieService {
   async update(
     id: string,
     user: User,
-    updateMovieDTO: MovieDTO,
+    updateMovieDTO: UpdateMovieDTO,
   ): Promise<Movie> {
     const movie = await this.getById(id);
 
@@ -63,7 +67,7 @@ export class MovieService {
 
     const sameName = await this.movie.findOne({ name: updateMovieDTO.name });
 
-    if (sameName) {
+    if (sameName && String(sameName._id) !== id) {
       throw new BadRequestException('Фильм с таким названием уже есть');
     }
 

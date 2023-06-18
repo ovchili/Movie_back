@@ -12,7 +12,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
-import { MovieDTO } from './dto/movie.dto';
+import { CreateMovieDTO, UpdateMovieDTO } from './dto/movie.dto';
 import { idValidationPipe } from 'src/pipes/id.validation.pipe';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { User } from 'src/auth/decorators/user.decorator';
@@ -37,7 +37,10 @@ export class MovieController {
   @HttpCode(HttpStatus.OK)
   @Post()
   @UsePipes(new ValidationPipe())
-  async createMovie(@User('_id') id: Types.ObjectId, @Body() movie: MovieDTO) {
+  async createMovie(
+    @User('_id') id: Types.ObjectId,
+    @Body() movie: CreateMovieDTO,
+  ) {
     return this.movieService.create(id, movie);
   }
 
@@ -49,7 +52,7 @@ export class MovieController {
     @User() user: UserModel,
     @Param('id', idValidationPipe)
     id: string,
-    @Body() updateMovieDTO: MovieDTO,
+    @Body() updateMovieDTO: UpdateMovieDTO,
   ) {
     return this.movieService.update(id, user, updateMovieDTO);
   }

@@ -8,6 +8,7 @@ import { getMongoDbConfig } from './config/mongo.config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { RatingModule } from './rating/rating.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RatingModule } from './rating/rating.module';
     UserModule,
     AuthModule,
     RatingModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
