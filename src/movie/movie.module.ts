@@ -12,5 +12,6 @@ import { Movie, MovieSchema } from './movie.model';
   ],
   controllers: [MovieController],
   providers: [MovieService],
+  exports: [MovieService],
 })
 export class MovieModule {}

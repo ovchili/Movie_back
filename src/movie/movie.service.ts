@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -28,12 +29,17 @@ export class MovieService {
   async getAll(): Promise<Movie[]> {
     return this.movie
       .find({})
-      .sort('rating')
+      .sort({ rating: -1 })
       .populate({ path: 'user', select: 'login id' })
       .exec();
   }
 
   async create(userId: Types.ObjectId, movieDTO: MovieDTO): Promise<Movie> {
+    const movie = await this.movie.findOne({ name: movieDTO.name });
+
+    if (movie) {
+      throw new BadRequestException('Фильм с таким названием уже есть');
+    }
     const newMovie = new this.movie({
       name: movieDTO.name,
       description: movieDTO.description,
@@ -55,6 +61,12 @@ export class MovieService {
       );
     }
 
+    const sameName = await this.movie.findOne({ name: updateMovieDTO.name });
+
+    if (sameName) {
+      throw new BadRequestException('Фильм с таким названием уже есть');
+    }
+
     const updateMovie = await this.movie
       .findByIdAndUpdate(id, updateMovieDTO, {
         new: true,
@@ -62,6 +74,18 @@ export class MovieService {
       .populate({ path: 'user', select: 'login id' });
 
     return updateMovie;
+  }
+
+  async updateRating(id: Types.ObjectId, newRating: number) {
+    return this.movie
+      .findByIdAndUpdate(
+        id,
+        {
+          rating: newRating,
+        },
+        { new: true },
+      )
+      .exec();
   }
 
   async delete(user: User, id: string): Promise<Movie> {

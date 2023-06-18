@@ -8,6 +8,8 @@ import {
   Param,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { MovieDTO } from './dto/movie.dto';
@@ -34,6 +36,7 @@ export class MovieController {
   @Auth()
   @HttpCode(HttpStatus.OK)
   @Post()
+  @UsePipes(new ValidationPipe())
   async createMovie(@User('_id') id: Types.ObjectId, @Body() movie: MovieDTO) {
     return this.movieService.create(id, movie);
   }
@@ -41,6 +44,7 @@ export class MovieController {
   @Auth()
   @HttpCode(HttpStatus.OK)
   @Put(':id')
+  @UsePipes(new ValidationPipe())
   async updateMovie(
     @User() user: UserModel,
     @Param('id', idValidationPipe)

@@ -4,7 +4,7 @@ import { User } from 'src/user/user.model';
 
 @Schema({ timestamps: true, _id: true })
 export class Movie extends Document {
-  @Prop()
+  @Prop({ required: true, unique: true })
   name: string;
 
   @Prop()
